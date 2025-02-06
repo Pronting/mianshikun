@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 /**
  * 全局异常处理器
  *
- * @author <a href="https://github.com/liyupi">程序员鱼皮</a>
- * @from <a href="https://yupi.icu">编程导航知识星球</a>
+ * @author <a href="https://github.com/Pronting">唐豪</a>
+ * @from <a href="https://www.cnblogs.com/pronting">博客地址</a>
  */
 @RestControllerAdvice
 @Slf4j

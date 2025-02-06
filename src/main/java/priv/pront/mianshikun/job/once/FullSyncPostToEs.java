@@ -14,8 +14,8 @@ import org.springframework.boot.CommandLineRunner;
 /**
  * 全量同步帖子到 es
  *
- * @author <a href="https://github.com/liyupi">程序员鱼皮</a>
- * @from <a href="https://yupi.icu">编程导航知识星球</a>
+ * @author <a href="https://github.com/Pronting">唐豪</a>
+ * @from <a href="https://www.cnblogs.com/pronting">博客地址</a>
  */
 // todo 取消注释开启任务
 //@Component

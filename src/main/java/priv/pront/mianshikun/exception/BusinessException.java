@@ -5,8 +5,8 @@ import priv.pront.mianshikun.common.ErrorCode;
 /**
  * 自定义异常类
  *
- * @author <a href="https://github.com/liyupi">程序员鱼皮</a>
- * @from <a href="https://yupi.icu">编程导航知识星球</a>
+ * @author <a href="https://github.com/Pronting">唐豪</a>
+ * @from <a href="https://www.cnblogs.com/pronting">博客地址</a>
  */
 public class BusinessException extends RuntimeException {
 
