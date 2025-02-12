@@ -3,8 +3,11 @@ package priv.pront.mianshikun.service.impl;
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.redisson.api.RBitSet;
+import org.redisson.api.RedissonClient;
 import priv.pront.mianshikun.common.ErrorCode;
 import priv.pront.mianshikun.constant.CommonConstant;
+import priv.pront.mianshikun.constant.RedisConstant;
 import priv.pront.mianshikun.exception.BusinessException;
 import priv.pront.mianshikun.mapper.UserMapper;
 import priv.pront.mianshikun.model.dto.user.UserQueryRequest;
@@ -14,9 +17,12 @@ import priv.pront.mianshikun.model.vo.LoginUserVO;
 import priv.pront.mianshikun.model.vo.UserVO;
 import priv.pront.mianshikun.service.UserService;
 import priv.pront.mianshikun.utils.SqlUtils;
-import java.util.ArrayList;
-import java.util.List;
+
+import java.time.LocalDate;
+import java.time.Year;
+import java.util.*;
 import java.util.stream.Collectors;
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.bean.WxOAuth2UserInfo;
@@ -35,6 +41,9 @@ import priv.pront.mianshikun.constant.UserConstant;
 @Service
 @Slf4j
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
+
+    @Resource
+    RedissonClient redissonClient;
 
     /**
      * 盐值，混淆密码
@@ -267,5 +276,32 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         queryWrapper.orderBy(SqlUtils.validSortField(sortField), sortOrder.equals(CommonConstant.SORT_ORDER_ASC),
                 sortField);
         return queryWrapper;
+    }
+
+    @Override
+    public boolean addUserSignIn(long userId) {
+        LocalDate date = LocalDate.now();
+        String key = RedisConstant.getUserSignInRedisKeyPrefix(date.getYear(), userId);
+        RBitSet signInBitSet = redissonClient.getBitSet(key);
+        int offset = date.getDayOfYear();
+        if(!signInBitSet.get(offset)){
+            signInBitSet.set(offset);
+            return signInBitSet.set(offset, true);
+        }
+        return true;
+    }
+
+    @Override
+    public List<Integer> getUserSignInRecord(long userId, Integer year) {
+        year = Optional.ofNullable(year).orElseGet(() -> LocalDate.now().getYear());
+        String key = RedisConstant.getUserSignInRedisKeyPrefix(year, userId);
+        BitSet bitSet = redissonClient.getBitSet(key).asBitSet();
+        List<Integer> dayList = new ArrayList<>();
+        int index = bitSet.nextSetBit(0);
+        while (index >= 0) {
+            dayList.add(index);
+            index = bitSet.nextSetBit(index + 1);
+        }
+        return dayList;
     }
 }
