@@ -20,7 +20,7 @@ import priv.pront.mianshikun.service.QuestionService;
  * @from <a href="https://www.cnblogs.com/pronting">博客地址</a>
  */
 // todo 取消注释开启任务
-@Component
+//@Component
 @Slf4j
 public class FullSyncQuestionToEs implements CommandLineRunner {
 

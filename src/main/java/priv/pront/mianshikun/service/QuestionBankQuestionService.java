@@ -3,11 +3,14 @@ package priv.pront.mianshikun.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.springframework.transaction.annotation.Transactional;
 import priv.pront.mianshikun.model.dto.questionBankQuestion.QuestionBankQuestionQueryRequest;
 import priv.pront.mianshikun.model.entity.QuestionBankQuestion;
+import priv.pront.mianshikun.model.entity.User;
 import priv.pront.mianshikun.model.vo.QuestionBankQuestionVO;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * 题库题目关联服务
@@ -50,4 +53,18 @@ public interface QuestionBankQuestionService extends IService<QuestionBankQuesti
      * @return
      */
     Page<QuestionBankQuestionVO> getQuestionBankQuestionVOPage(Page<QuestionBankQuestion> questionBankQuestionPage, HttpServletRequest request);
+
+
+    /**
+     * 批量添加题目到题库
+     *
+     * @param questionIdList
+     * @param questionBankId
+     * @param loginUser
+     */
+    void batchAddQuestionsToBank(List<Long> questionIdList, Long questionBankId, User loginUser);
+
+
+    void batchRemoveQuestionsFromBank(List<Long> questionIdList, Long questionBankId);
+
 }

@@ -14,18 +14,18 @@ import priv.pront.mianshikun.common.ResultUtils;
 import priv.pront.mianshikun.constant.UserConstant;
 import priv.pront.mianshikun.exception.BusinessException;
 import priv.pront.mianshikun.exception.ThrowUtils;
-import priv.pront.mianshikun.model.dto.questionBankQuestion.QuestionBankQuestionAddRequest;
-import priv.pront.mianshikun.model.dto.questionBankQuestion.QuestionBankQuestionQueryRequest;
-import priv.pront.mianshikun.model.dto.questionBankQuestion.QuestionBankQuestionRemoveRequest;
-import priv.pront.mianshikun.model.dto.questionBankQuestion.QuestionBankQuestionUpdateRequest;
+import priv.pront.mianshikun.model.dto.question.QuestionBatchDeleteRequest;
+import priv.pront.mianshikun.model.dto.questionBankQuestion.*;
 import priv.pront.mianshikun.model.entity.QuestionBankQuestion;
 import priv.pront.mianshikun.model.entity.User;
 import priv.pront.mianshikun.model.vo.QuestionBankQuestionVO;
 import priv.pront.mianshikun.service.QuestionBankQuestionService;
+import priv.pront.mianshikun.service.QuestionService;
 import priv.pront.mianshikun.service.UserService;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * 题库题目关联接口
@@ -43,6 +43,9 @@ public class QuestionBankQuestionController {
 
     @Resource
     private UserService userService;
+
+    @Resource
+    private QuestionService questionService;
 
     // region 增删改查
 
@@ -221,4 +224,30 @@ public class QuestionBankQuestionController {
     }
 
     // endregion
+
+
+    @PostMapping("/remove/batch")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<Boolean> batchRemoveQuestionsFromBank(
+            @RequestBody QuestionBankQuestionBatchRemoveRequest questionBankQuestionBatchRemoveRequest,
+            HttpServletRequest request
+    ) {
+        // 参数校验
+        ThrowUtils.throwIf(questionBankQuestionBatchRemoveRequest == null, ErrorCode.PARAMS_ERROR);
+        Long questionBankId = questionBankQuestionBatchRemoveRequest.getQuestionBankId();
+        List<Long> questionIdList = questionBankQuestionBatchRemoveRequest.getQuestionIdList();
+        questionBankQuestionService.batchRemoveQuestionsFromBank(questionIdList, questionBankId);
+        return ResultUtils.success(true);
+    }
+
+    @PostMapping("/delete/batch")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<Boolean> batchDeleteQuestions(@RequestBody QuestionBatchDeleteRequest questionBatchDeleteRequest,
+                                                      HttpServletRequest request) {
+        ThrowUtils.throwIf(questionBatchDeleteRequest == null, ErrorCode.PARAMS_ERROR);
+        questionService.batchDeleteQuestions(questionBatchDeleteRequest.getQuestionIdList());
+        return ResultUtils.success(true);
+    }
+
+
 }

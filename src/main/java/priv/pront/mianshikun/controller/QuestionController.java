@@ -21,6 +21,7 @@ import priv.pront.mianshikun.model.dto.question.QuestionAddRequest;
 import priv.pront.mianshikun.model.dto.question.QuestionEditRequest;
 import priv.pront.mianshikun.model.dto.question.QuestionQueryRequest;
 import priv.pront.mianshikun.model.dto.question.QuestionUpdateRequest;
+import priv.pront.mianshikun.model.dto.questionBankQuestion.QuestionBankQuestionBatchAddRequest;
 import priv.pront.mianshikun.model.entity.Question;
 import priv.pront.mianshikun.model.entity.QuestionBankQuestion;
 import priv.pront.mianshikun.model.entity.User;
@@ -264,4 +265,21 @@ public class QuestionController {
 
 
     // endregion
+
+
+    @PostMapping("/add/batch")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<Boolean> batchAddQuestionsToBank(
+            @RequestBody QuestionBankQuestionBatchAddRequest questionBankQuestionBatchAddRequest,
+            HttpServletRequest request
+    ) {
+        // 参数校验
+        ThrowUtils.throwIf(questionBankQuestionBatchAddRequest == null, ErrorCode.PARAMS_ERROR);
+        User loginUser = userService.getLoginUser(request);
+        Long questionBankId = questionBankQuestionBatchAddRequest.getQuestionBankId();
+        List<Long> questionIdList = questionBankQuestionBatchAddRequest.getQuestionIdList();
+        questionBankQuestionService.batchAddQuestionsToBank(questionIdList, questionBankId, loginUser);
+        return ResultUtils.success(true);
+    }
+
 }
